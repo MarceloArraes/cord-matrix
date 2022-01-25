@@ -58,7 +58,7 @@ function GlobalStyle() {
 export default HomePage */
 
 export default function PaginaInicial() {
-  const username = 'peas';
+  const username = 'MarceloArraes';
 
   return (
     <>
