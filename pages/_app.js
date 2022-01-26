@@ -1,5 +1,8 @@
+import React from "react";
+
 export default function MyApp({ Component, pageProps}) {
   console.log('Roda em todas as páginas');
+
   return ( 
     <>
     <GlobalStyle />
@@ -8,7 +11,7 @@ export default function MyApp({ Component, pageProps}) {
     </>
   );
 }
-
+//        border: 1px solid red;
 function GlobalStyle() {
   return (
     <style global jsx>{`
@@ -17,6 +20,7 @@ function GlobalStyle() {
         padding: 0;
         box-sizing: border-box;
         list-style: none;
+
       }
       body {
         font-family: 'Open Sans', sans-serif;
