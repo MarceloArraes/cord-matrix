@@ -3,15 +3,23 @@ import React from 'react';
 import appConfig from '../config.json';
 
 
-
-
 export default function ChatPage() {
     const [message, setMessage] = React.useState('');
     const [messages, setMessages] = React.useState([]);
     const username = 'OmarioSouto';
+    
+
+    //use getUsername to get the username from the function
+
     // Sua lógica vai aqui
 
     // ./Sua lógica vai aqui
+
+    function changeMessages(newMessages){
+        setMessages(newMessages);
+    }
+
+
     return (
         <Box
             styleSheet={{
@@ -50,7 +58,7 @@ export default function ChatPage() {
                     }}
                 >
 
-                    <MessageList mensagens={messages} />
+                    <MessageList mensagens={messages} changeMessages={changeMessages} />
 
                     <Box
                         as="form"
@@ -77,8 +85,10 @@ export default function ChatPage() {
                             onKeyPress={(e) => {
                               console.log(e.key)
                                 if (e.key === 'Enter') {
-                                    console.log('entered e.key', e.key);
                                     e.preventDefault();
+                                }
+                                if (e.key === 'Enter' && message.trim().length  > 0) {
+                                    console.log('entered e.key', e.key);
                                     setMessages([...messages, { id: Math.random(), texto: message, de: username }]);
                                     setMessage('');
                                 } 
@@ -86,10 +96,7 @@ export default function ChatPage() {
                           }
                             onChange={(e) => {
                             console.log(e.target.value);
-                            if(e.target.value.length > 0 ){
-                              setMessage(e.target.value);
-                            }
-                            
+                            setMessage(e.target.value);
                             }
                             }
                         />
@@ -120,6 +127,7 @@ function Header() {
 
 function MessageList(props) {
     console.log('MessageList', props);
+
     if(props.mensagens.length === 0) {
         return <div></div>}
 
@@ -165,6 +173,11 @@ function MessageList(props) {
                       cursor: 'pointer',
                       fontSize: '1.5rem',
                       float: 'right',
+                    }}
+                    onClick={() => {
+                        console.log('clicked');
+                        //use function changeMessages to remove the message from the list
+                        props.changeMessages(props.mensagens.filter(m => m.id !== mensagem.id));
                     }}
                   /> 
                     <Text

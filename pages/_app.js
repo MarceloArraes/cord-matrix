@@ -1,13 +1,15 @@
 import React from "react";
 
+
+
 export default function MyApp({ Component, pageProps}) {
   console.log('Roda em todas as páginas');
+  const [username, setUsername] = React.useState('MarceloArraes');
 
   return ( 
     <>
     <GlobalStyle />
     <Component {...pageProps} />
-    
     </>
   );
 }

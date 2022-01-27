@@ -1,6 +1,6 @@
 import appConfig from '../config.json';
 import { Box, Button, Text, TextField, Image } from '@skynexui/components';
-import React from 'react';
+import React,{ useState, createContext, useContext } from 'react';
 import { useRouter } from 'next/router'
 
 function Titulo(props) {
@@ -19,7 +19,6 @@ function Titulo(props) {
 }
 
 
-
 /* function HomePage() {
   return (
   <div>
@@ -34,8 +33,7 @@ export default HomePage */
 
 export default function PaginaInicial() {
   const roteamento = useRouter();
-  const [username, setUsername]= React.useState('MarceloArraes');
-  
+  const [username, setUsername] = useState('MarceloArraes');
   return (
     <>
       <Box
@@ -66,6 +64,7 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={(e) => {
               e.preventDefault();
+              
               roteamento.push('/chat');
               
             }}
