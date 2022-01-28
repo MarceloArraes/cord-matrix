@@ -4,7 +4,6 @@ import React,{ useState, createContext, useContext } from 'react';
 import { useRouter } from 'next/router'
 
 function Titulo(props) {
-  console.log(props);
   const Tag = props.tag || 'h1';
   return (
   <>
@@ -34,6 +33,7 @@ export default HomePage */
 export default function PaginaInicial() {
   const roteamento = useRouter();
   const [username, setUsername] = useState('MarceloArraes');
+
   return (
     <>
       <Box
@@ -66,7 +66,7 @@ export default function PaginaInicial() {
               e.preventDefault();
               
               roteamento.push('/chat');
-              
+
             }}
             styleSheet={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',

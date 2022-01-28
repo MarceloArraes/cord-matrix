@@ -1,22 +1,66 @@
 import { Box, Text, TextField, Image, Button, Icon } from '@skynexui/components';
-import React from 'react';
+import React,{useEffect} from 'react';
 import appConfig from '../config.json';
+import { createClient } from '@supabase/supabase-js'
+
+const SUPA2 = JSON.stringify('SUPABASE_ANON_KEY.json');
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxMTIxMCwiZXhwIjoxOTU4ODg3MjEwfQ.5n5v1Ns5cr_w6g16S260ZaB2_OFbI22ZgZq7-XfOlak';
+const SUPABASE_URL =  'https://kapjhvjdbaxlvwkmkmwe.supabase.co';
+const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 export default function ChatPage() {
     const [message, setMessage] = React.useState('');
     const [messages, setMessages] = React.useState([]);
-    const username = 'OmarioSouto';
-    
+    const username = 'MarceloArraes';
+    //const username = PaginaInicial.getUsername();
 
     //use getUsername to get the username from the function
 
-    // Sua lógica vai aqui
 
-    // ./Sua lógica vai aqui
+    function deleteMessage(MessageToDelete) {
+        /* setMessages(newMessages); */
+        supabase_client
+        .from('mensagens')
+        .delete()
+        .match({ id: MessageToDelete.id })
+        .then((result) => {
+            console.log('Message deleted:', result);
+            setMessages(messages.filter(m => m.id !== MessageToDelete.id));
+        })
+    }
+    
+    useEffect(() => {
+        supabase_client
+        .from('mensagens').select('*')
+        .then(result => {
+            console.log(result);
+            setMessages(result.data);
+        });
+    }, []);
+    
+    function handleMessageInput(e){
+        const mensagem ={
+            /* id: Math.random(),  */
+            texto: message, 
+            de: username 
+       }
+       if (e.key === 'Enter') {
+           e.preventDefault();
+       }
+       if (e.key === 'Enter' && message.trim().length  > 0) {
+           supabase_client
+           .from('mensagens').insert(
+               [mensagem])
+           .then(result => {
+               console.log(result);
+               setMessages([...messages, result.data[0]]);
+           });
 
-    function changeMessages(newMessages){
-        setMessages(newMessages);
+           console.log('entered e.key', e.key);
+/*            setMessages([...messages, mensagem]); */
+           setMessage('');
+       } 
     }
 
 
@@ -58,7 +102,7 @@ export default function ChatPage() {
                     }}
                 >
 
-                    <MessageList mensagens={messages} changeMessages={changeMessages} />
+                    <MessageList mensagens={messages} deleteMessage={deleteMessage} />
 
                     <Box
                         as="form"
@@ -82,20 +126,12 @@ export default function ChatPage() {
                                 color: appConfig.theme.colors.neutrals[200],
                             }}
                             value={message}
+
                             onKeyPress={(e) => {
-                              console.log(e.key)
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                }
-                                if (e.key === 'Enter' && message.trim().length  > 0) {
-                                    console.log('entered e.key', e.key);
-                                    setMessages([...messages, { id: Math.random(), texto: message, de: username }]);
-                                    setMessage('');
-                                } 
+                                handleMessageInput(e);
                             }
                           }
                             onChange={(e) => {
-                            console.log(e.target.value);
                             setMessage(e.target.value);
                             }
                             }
@@ -126,7 +162,6 @@ function Header() {
 }
 
 function MessageList(props) {
-    console.log('MessageList', props);
 
     if(props.mensagens.length === 0) {
         return <div></div>}
@@ -159,7 +194,7 @@ function MessageList(props) {
                             display: 'inline-block',
                             marginRight: '8px',
                         }}
-                        src={`https://github.com/omariosouto.png`}
+                        src={`https://github.com/${mensagem.de}.png`}
                     />
                     <Text tag="strong">
                         {mensagem.de}
@@ -177,7 +212,8 @@ function MessageList(props) {
                     onClick={() => {
                         console.log('clicked');
                         //use function changeMessages to remove the message from the list
-                        props.changeMessages(props.mensagens.filter(m => m.id !== mensagem.id));
+                        /* props.deleteMessage(props.mensagens.filter(m => m.id !== mensagem.id)); */
+                        props.deleteMessage(mensagem);
                     }}
                   /> 
                     <Text
