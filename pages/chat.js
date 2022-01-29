@@ -2,17 +2,28 @@ import { Box, Text, TextField, Image, Button, Icon } from '@skynexui/components'
 import React,{useEffect} from 'react';
 import appConfig from '../config.json';
 import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/router'
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker';
 
-const SUPA2 = JSON.stringify('SUPABASE_ANON_KEY.json');
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMxMTIxMCwiZXhwIjoxOTU4ODg3MjEwfQ.5n5v1Ns5cr_w6g16S260ZaB2_OFbI22ZgZq7-XfOlak';
 const SUPABASE_URL =  'https://kapjhvjdbaxlvwkmkmwe.supabase.co';
 const supabase_client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 export default function ChatPage() {
+    const roteamento = useRouter();
     const [message, setMessage] = React.useState('');
+    const username = roteamento.query.username;
     const [messages, setMessages] = React.useState([]);
-    const username = 'MarceloArraes';
+    
+    function updateMessagesRealTime() {
+        return supabase_client.from('mensagens').on('INSERT',(data) => {
+            console.log('mensagem inserida');
+            setMessages((messages) => [...messages, data.new]);
+        })
+        .subscribe();
+    }
+
     //const username = PaginaInicial.getUsername();
 
     //use getUsername to get the username from the function
@@ -37,7 +48,9 @@ export default function ChatPage() {
             console.log(result);
             setMessages(result.data);
         });
-    }, []);
+        
+        updateMessagesRealTime();
+        }, []);
     
     function handleMessageInput(e){
         const mensagem ={
@@ -54,15 +67,34 @@ export default function ChatPage() {
                [mensagem])
            .then(result => {
                console.log(result);
-               setMessages([...messages, result.data[0]]);
+               //setMessages([...messages, result.data[0]]);
            });
 
            console.log('entered e.key', e.key);
-/*            setMessages([...messages, mensagem]); */
            setMessage('');
        } 
     }
 
+    function handleSticker(sticker_url){
+        console.log('sticker_url', sticker_url);
+        const mensagem ={
+            de: username,
+            texto: `:sticker:${sticker_url}`
+        }
+        supabase_client
+        .from('mensagens').insert(
+            [mensagem])
+        .then(result => {
+            console.log(result);
+            setMessages([...messages, result.data[0]]);
+        })
+        .then((data) => {
+            console.log('data', data);
+        });
+        setMessage('');
+
+
+    }
 
     return (
         <Box
@@ -136,6 +168,7 @@ export default function ChatPage() {
                             }
                             }
                         />
+                        <ButtonSendSticker onStickerClick={handleSticker} />
                     </Box>
                 </Box>
             </Box>
@@ -227,7 +260,17 @@ function MessageList(props) {
                         {(new Date().toLocaleDateString())}
                     </Text>
                 </Box>
-                {mensagem.texto}
+                {mensagem.texto.startsWith(':sticker:') ? 
+                <Image src={mensagem.texto.replace(':sticker:','')} styleSheet={{
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    display: 'inline-block',
+                    marginRight: '8px',
+                }} /> : 
+                mensagem.texto
+                }
+
             </Text>
         )})
     return (
