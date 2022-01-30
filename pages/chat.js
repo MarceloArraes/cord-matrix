@@ -86,7 +86,7 @@ export default function ChatPage() {
             [mensagem])
         .then(result => {
             console.log(result);
-            setMessages([...messages, result.data[0]]);
+            //setMessages([...messages, result.data[0]]);
         })
         .then((data) => {
             console.log('data', data);
@@ -261,13 +261,7 @@ function MessageList(props) {
                     </Text>
                 </Box>
                 {mensagem.texto.startsWith(':sticker:') ? 
-                <Image src={mensagem.texto.replace(':sticker:','')} styleSheet={{
-                    width: '20px',
-                    height: '20px',
-                    borderRadius: '50%',
-                    display: 'inline-block',
-                    marginRight: '8px',
-                }} /> : 
+                <Image src={mensagem.texto.replace(':sticker:','')}  /> : 
                 mensagem.texto
                 }
 
